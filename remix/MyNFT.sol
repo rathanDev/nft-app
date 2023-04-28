@@ -42,8 +42,8 @@ contract MyNFT is ERC721, Ownable {
         return isMintingAllowed;
     }
 
-    function flipMintingAllowed() external onlyOwner {
-        isMintingAllowed = !isMintingAllowed;
+    function enableMinting() external onlyOwner {
+        isMintingAllowed = true;
     }
 
 }

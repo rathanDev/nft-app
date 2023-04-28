@@ -13,7 +13,7 @@ const NFT = () => {
 
   const [balance, setBalance] = useState(-1);
   const [block, setBlock] = useState("");
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
 
   useEffect(() => {
     // connectToMetamask();
@@ -21,16 +21,11 @@ const NFT = () => {
 
   const connectToMetamask = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log("provider", provider);
     const accounts = await provider.send("eth_requestAccounts", []);
-    console.log("accounts", accounts);
     setSelectedAccount(accounts[0]);
     const balance = await provider.getBalance(selectedAccount);
-    console.log("balance", balance);
 
-    console.log("ethersUtils-->", ethers);
     const balanceInEther = ethers.utils.formatEther(balance);
-    console.log("balanceInEther", balanceInEther);
     setBalance(balance);
 
     const block = await provider.getBlockNumber();
@@ -41,8 +36,7 @@ const NFT = () => {
     console.log("contract", contract);
   };
 
-  const flipMintingAllowed = async () => {
-    console.log("At transfer-->", ethers);
+  const enableMinting = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
 
@@ -50,8 +44,8 @@ const NFT = () => {
 
     const contractWithSigner = contract.connect(signer);
 
-    const flipped = await contractWithSigner.flipMintingAllowed();
-    console.log("flipped?", flipped, new Date());
+    const enabled = await contractWithSigner.enableMinting();
+    console.log("enabled?", enabled, new Date());
   };
 
   const mintNFT = async () => {
@@ -101,7 +95,7 @@ const NFT = () => {
         onChange={(e) => setNftUri(e.target.value)}
       />
       Balance: {ethers.utils.formatEther(balance)} <br />
-      <button onClick={flipMintingAllowed}>Flip Minting Allowed</button>
+      <button onClick={enableMinting}>Enable Minting</button>
       <button onClick={mintNFT}>Mint NFT</button> <br />
       </>
   );
