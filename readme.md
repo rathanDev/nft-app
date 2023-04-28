@@ -1,4 +1,5 @@
 # README.md
+# Please refer the pics of testing
 
 Add metamask chrome plugin
 Enable test network
