@@ -85,7 +85,7 @@ func handleRegister(c *gin.Context) {
 
 func addRegistration(reg Registration) (int64, error) {
 	fmt.Println("AddRegistration", reg)
-	result, err := db.Exec("INSERT INTO registration (nric, wallet_address) VALUES (?, ?)", reg.Nric, reg.WalletAddress)
+	result, err := db.Exec("INSERT INTO registration (nric, wallet_address, hash) VALUES (?, ?, ?)", reg.Nric, reg.WalletAddress, reg.Hash)
 	if err != nil {
 		return 0, fmt.Errorf("addReg: %v", err)
 	}
