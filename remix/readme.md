@@ -6,5 +6,5 @@ Compile and Run script
 In Deploy & Run transactions 
     For Environment choose Injected Provider - Metamask 
     Deploy 
-
-ABI is used in react project
+    Get the deployed contract address and use in react project 
+    Get the ABI and use in react project

@@ -1,6 +1,7 @@
 # README.md
 
 Add metamask chrome plugin
+Enable test network
 
 cd hardhat 
 follow readme 
@@ -11,7 +12,6 @@ follow readme
 fe contains a ReactJs project
 cd fe
 follow readme
-
 
 be contains a golang project
 cd be 
