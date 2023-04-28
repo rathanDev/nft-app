@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"crypto/sha256"
+	"golang.org/x/crypto/sha3"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
@@ -70,14 +70,11 @@ func handleRegister(c *gin.Context) {
 		return
 	}
 
-	hasher := sha256.New()
-	if _, err := hasher.Write([]byte(reqJSON)); err != nil {
-		log.Fatal(err)
-	}
-	hash := hex.EncodeToString(hasher.Sum(nil))
-	fmt.Println("hash", hash)
+	hash := make([]byte, 8)
+	sha3.ShakeSum256(hash, []byte(reqJSON))
+	hashString := hex.EncodeToString(hash)
 
-	reg := Registration{Nric: req.NRIC, WalletAddress: req.WalletAddress, Hash: hash}
+	reg := Registration{Nric: req.NRIC, WalletAddress: req.WalletAddress, Hash: hashString}
 	addRegistration(reg)
 
 	c.JSON(http.StatusOK, reg)
