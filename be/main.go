@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"crypto/rand"
+	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"encoding/json"
 	"log"
 )
 
@@ -36,6 +37,7 @@ type Registration struct {
 	Id            int    `json:"id"`
 	Nric          string `json:"nric"`
 	WalletAddress string `json:"wallet_address"`
+	Hash          string `json:"hash"`
 }
 
 var db *sql.DB
@@ -62,20 +64,23 @@ func handleRegister(c *gin.Context) {
 	}
 	fmt.Println("Wallet Unique")
 
-	receiptHash := make([]byte, 32)
-	_, err := rand.Read(receiptHash)
+	reqJSON, err := json.Marshal(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate receipt hash"})
+		fmt.Println(err)
 		return
 	}
-	receipt := hex.EncodeToString(receiptHash)
 
-	reg := Registration{Nric: req.NRIC, WalletAddress: req.WalletAddress}
-	// reg := Registration{Nric: "someNric", WalletAddress: req.WalletAddress}
+	hasher := sha256.New()
+	if _, err := hasher.Write([]byte(reqJSON)); err != nil {
+		log.Fatal(err)
+	}
+	hash := hex.EncodeToString(hasher.Sum(nil))
+	fmt.Println("hash", hash)
+
+	reg := Registration{Nric: req.NRIC, WalletAddress: req.WalletAddress, Hash: hash}
 	addRegistration(reg)
 
-	res := RegisterResponse{Receipt: receipt}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, reg)
 }
 
 func addRegistration(reg Registration) (int64, error) {
@@ -129,11 +134,11 @@ func main() {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
-    config.AllowAllOrigins = true
-    config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-    config.AllowHeaders = []string{"Authorization", "Content-Type"}
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Authorization", "Content-Type"}
 
-    router.Use(cors.New(config))
+	router.Use(cors.New(config))
 
 	router.POST("/register", handleRegister)
 
