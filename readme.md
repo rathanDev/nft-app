@@ -1,7 +1,12 @@
+# README.md
+
 Add metamask chrome plugin
 
 cd hardhat 
 follow readme 
+
+cd remix 
+follow readme
 
 fe contains a ReactJs project
 cd fe
